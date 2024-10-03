@@ -293,11 +293,15 @@ def solve_LHIRES_wavelength(calibration_data_folder: str, micrometer_setting: fl
     npixels = 11
     median = np.median(ne_spectrum)
     test = [median]
+    infinite_loop_flag = False
 
     while median in test:
         npixels -= 1
         if npixels == 0:
             npixels = 20
+            infinite_loop_flag = True
+        elif npixels == 10 and infinite_loop_flag:
+            raise ZeroDivisionError("Unable to improve x val guesses")
         test = [ne_spectrum[g-npixels:g+npixels] for g in map(int, ne_pixel_vals)]
 
     improved_xval_guesses_ne = [np.average(xaxis[g-npixels:g+npixels],
